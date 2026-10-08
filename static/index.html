@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piano Music MCP - Music Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="piano-icon">🎹</span>
+        <div>
+          <h1>Piano Music MCP</h1>
+          <p class="subtitle">Music Intelligence Layer powered by Model Context Protocol</p>
+        </div>
+      </div>
+      <div class="mcp-badge" id="tools-badge">
+        <span class="pulse-dot"></span>
+        <span id="tools-status">3 MCP Tools Active</span>
+      </div>
+    </header>
+
+    <!-- Navigation / Tool Selector Tabs -->
+    <nav class="tool-tabs" id="tool-tabs">
+      <button class="tab-btn active" data-tool="get_chord">
+        <span class="tab-icon">🎵</span>
+        <span>Chord Analyzer</span>
+      </button>
+      <button class="tab-btn" data-tool="get_scale">
+        <span class="tab-icon">🎼</span>
+        <span>Scale Explorer</span>
+      </button>
+      <button class="tab-btn" data-tool="transpose_chord">
+        <span class="tab-icon">🔄</span>
+        <span>Transpose Chord</span>
+      </button>
+    </nav>
+
+    <!-- Main Card -->
+    <main class="main-card">
+      
+      <!-- MODE 1: get_chord Form -->
+      <section id="form-get_chord" class="tool-form-section">
+        <label for="chord-input" class="input-label">Enter a Piano Chord Symbol</label>
+        <div class="search-bar">
+          <input
+            type="text"
+            id="chord-input"
+            class="chord-input"
+            placeholder="e.g. Cmaj7, Am7, F#m7b5, C/E, C7#9"
+            autocomplete="off"
+            spellcheck="false"
+            value="Cmaj7"
+          />
+          <button id="analyze-chord-btn" class="action-btn">
+            <span class="btn-text">Analyze Chord</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+        </div>
+
+        <div class="quick-examples">
+          <span class="examples-label">Try quick chords:</span>
+          <div class="pill-group">
+            <button class="pill chord-pill" data-val="Cmaj7">Cmaj7</button>
+            <button class="pill chord-pill" data-val="Am7">Am7</button>
+            <button class="pill chord-pill" data-val="F#m7b5">F#m7b5</button>
+            <button class="pill chord-pill" data-val="C/E">C/E</button>
+            <button class="pill chord-pill" data-val="C9">C9</button>
+            <button class="pill chord-pill" data-val="C6/9">C6/9</button>
+            <button class="pill chord-pill" data-val="C7#9">C7#9</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODE 2: get_scale Form -->
+      <section id="form-get_scale" class="tool-form-section hidden">
+        <div class="multi-input-grid">
+          <div class="input-field">
+            <label for="scale-root-input" class="input-label">Root Note</label>
+            <input
+              type="text"
+              id="scale-root-input"
+              class="chord-input"
+              placeholder="e.g. C, F#, Bb, A"
+              value="C"
+            />
+          </div>
+          <div class="input-field">
+            <label for="scale-type-select" class="input-label">Scale / Mode</label>
+            <select id="scale-type-select" class="select-input">
+              <option value="major">Major (Ionian)</option>
+              <option value="minor">Natural Minor (Aeolian)</option>
+              <option value="harmonic_minor">Harmonic Minor</option>
+              <option value="melodic_minor">Melodic Minor</option>
+              <option value="dorian">Dorian Mode</option>
+              <option value="phrygian">Phrygian Mode</option>
+              <option value="lydian">Lydian Mode</option>
+              <option value="mixolydian">Mixolydian Mode</option>
+              <option value="locrian">Locrian Mode</option>
+              <option value="pentatonic_major">Major Pentatonic</option>
+              <option value="pentatonic_minor">Minor Pentatonic</option>
+              <option value="blues">Blues Scale</option>
+              <option value="whole_tone">Whole Tone</option>
+              <option value="chromatic">Chromatic</option>
+            </select>
+          </div>
+        </div>
+        <button id="explore-scale-btn" class="action-btn full-btn">
+          <span class="btn-text">Generate Scale</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+
+        <div class="quick-examples">
+          <span class="examples-label">Try quick scales:</span>
+          <div class="pill-group">
+            <button class="pill scale-pill" data-root="C" data-type="major">C Major</button>
+            <button class="pill scale-pill" data-root="A" data-type="minor">A Minor</button>
+            <button class="pill scale-pill" data-root="D" data-type="dorian">D Dorian</button>
+            <button class="pill scale-pill" data-root="F#" data-type="harmonic_minor">F# Harmonic Minor</button>
+            <button class="pill scale-pill" data-root="E" data-type="blues">E Blues</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODE 3: transpose_chord Form -->
+      <section id="form-transpose_chord" class="tool-form-section hidden">
+        <div class="multi-input-grid">
+          <div class="input-field">
+            <label for="transpose-chord-input" class="input-label">Original Chord</label>
+            <input
+              type="text"
+              id="transpose-chord-input"
+              class="chord-input"
+              placeholder="e.g. Cmaj7, Am7, C/E"
+              value="Cmaj7"
+            />
+          </div>
+          <div class="input-field">
+            <label for="transpose-semitones-input" class="input-label">Shift (Semitones / Half-Steps)</label>
+            <input
+              type="number"
+              id="transpose-semitones-input"
+              class="chord-input"
+              placeholder="e.g. 2, -3"
+              value="2"
+            />
+          </div>
+        </div>
+        <button id="transpose-btn" class="action-btn full-btn">
+          <span class="btn-text">Transpose Chord</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+
+        <div class="quick-examples">
+          <span class="examples-label">Quick transpose presets:</span>
+          <div class="pill-group">
+            <button class="pill transpose-pill" data-chord="Cmaj7" data-semi="2">+2 (Whole Step Up)</button>
+            <button class="pill transpose-pill" data-chord="Am7" data-semi="-2">-2 (Whole Step Down)</button>
+            <button class="pill transpose-pill" data-chord="C/E" data-semi="2">C/E +2</button>
+            <button class="pill transpose-pill" data-chord="F#m7b5" data-semi="1">F#m7b5 +1</button>
+            <button class="pill transpose-pill" data-chord="G7" data-semi="5">+5 (4th Up)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Error Message Banner -->
+      <div id="error-banner" class="error-banner hidden">
+        <span class="error-icon">⚠️</span>
+        <span id="error-text" class="error-text">Error occurred.</span>
+      </div>
+
+      <!-- Results Display Section -->
+      <section id="results-section" class="results-section hidden">
+        <div class="results-header">
+          <div class="title-with-badges">
+            <h2 id="result-title" class="result-title">Result</h2>
+            <span id="result-badge-1" class="badge badge-quality">Badge</span>
+            <span id="result-badge-2" class="badge badge-inversion hidden">Inversion</span>
+          </div>
+          <span class="mcp-verified" id="result-tool-tag">✓ Verified via MCP</span>
+        </div>
+
+        <!-- Note Badges -->
+        <div class="result-block">
+          <h3 class="block-title">Musical Notes</h3>
+          <div id="notes-container" class="notes-grid"></div>
+        </div>
+
+        <!-- Theory Breakdown Grid -->
+        <div class="theory-grid">
+          <div class="theory-card">
+            <div class="theory-header">
+              <span class="theory-label">Scale Degrees / Formula</span>
+            </div>
+            <div id="formula-container" class="formula-tags"></div>
+          </div>
+
+          <div class="theory-card">
+            <div class="theory-header">
+              <span class="theory-label">Semitone Offsets (from Root)</span>
+            </div>
+            <div id="intervals-container" class="intervals-tags"></div>
+          </div>
+        </div>
+
+        <!-- Extra details (e.g. Inversion or Transposition Details) -->
+        <div id="extra-info-box" class="extra-box hidden">
+          <span class="extra-icon">ℹ️</span>
+          <span id="extra-info-text">Details</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Architecture: <strong>Browser UI</strong> ⇄ <strong>HTTP API</strong> ⇄ <strong>MCP ClientSession (stdio)</strong> ⇄ <strong>MCPServer (3 Tools)</strong></p>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
