@@ -40,6 +40,10 @@
         <span class="tab-icon">🔄</span>
         <span>Transpose Chord</span>
       </button>
+      <button class="tab-btn" data-tool="search_music">
+        <span class="tab-icon">🔍</span>
+        <span>Music Search</span>
+      </button>
     </nav>
 
     <!-- Main Card -->
@@ -169,6 +173,37 @@
         </div>
       </section>
 
+      <!-- MODE 4: search_music Form -->
+      <section id="form-search_music" class="tool-form-section hidden">
+        <label for="music-search-input" class="input-label">Search by Song Title, Artist, or Album</label>
+        <div class="search-bar">
+          <input
+            type="text"
+            id="music-search-input"
+            class="chord-input"
+            placeholder="e.g. Bohemian Rhapsody, Miles Davis, Abbey Road, artist:Queen"
+            autocomplete="off"
+            spellcheck="false"
+            value="Bohemian Rhapsody"
+          />
+          <button id="search-music-btn" class="action-btn">
+            <span class="btn-text">Search</span>
+            <span class="btn-loader hidden"></span>
+          </button>
+        </div>
+
+        <div class="quick-examples">
+          <span class="examples-label">Try quick searches:</span>
+          <div class="pill-group">
+            <button class="pill music-pill" data-query="Bohemian Rhapsody">Bohemian Rhapsody</button>
+            <button class="pill music-pill" data-query="Clair de Lune">Clair de Lune</button>
+            <button class="pill music-pill" data-query="Imagine John Lennon">Imagine</button>
+            <button class="pill music-pill" data-query="Autumn Leaves">Autumn Leaves</button>
+            <button class="pill music-pill" data-query="Für Elise">Für Elise</button>
+          </div>
+        </div>
+      </section>
+
       <!-- Error Message Banner -->
       <div id="error-banner" class="error-banner hidden">
         <span class="error-icon">⚠️</span>
@@ -186,40 +221,126 @@
           <span class="mcp-verified" id="result-tool-tag">✓ Verified via MCP</span>
         </div>
 
-        <!-- Note Badges -->
-        <div class="result-block">
-          <h3 class="block-title">Musical Notes</h3>
-          <div id="notes-container" class="notes-grid"></div>
-        </div>
+        <!-- Music Search Results (MusicBrainz) -->
+        <div id="music-results-container" class="music-results-container hidden"></div>
 
-        <!-- Theory Breakdown Grid -->
-        <div class="theory-grid">
-          <div class="theory-card">
-            <div class="theory-header">
-              <span class="theory-label">Scale Degrees / Formula</span>
+        <!-- Song Details Panel (Deep MusicBrainz Metadata) -->
+        <div id="song-details-container" class="song-details-container hidden">
+          <div class="details-top-bar">
+            <button id="back-to-results-btn" class="back-btn">← Back to Search Results</button>
+            <span class="mcp-subtag" id="details-recording-id">MBID: ...</span>
+          </div>
+          
+          <div class="details-hero-card">
+            <div class="hero-main">
+              <h3 id="detail-song-title" class="hero-title">Song Title</h3>
+              <p id="detail-artist-name" class="hero-artist">Performing Artist</p>
             </div>
-            <div id="formula-container" class="formula-tags"></div>
+            <div class="hero-badge-group">
+              <span id="detail-duration-badge" class="detail-pill">⏱️ 0:00</span>
+              <span id="detail-first-release-badge" class="detail-pill">📅 First: YYYY</span>
+            </div>
           </div>
 
-          <div class="theory-card">
-            <div class="theory-header">
-              <span class="theory-label">Semitone Offsets (from Root)</span>
+          <!-- 2-Column Metadata Grid -->
+          <div class="details-grid">
+            <!-- Composition & Authorship -->
+            <div class="detail-card">
+              <h4 class="detail-card-title">🎼 Composition & Authorship</h4>
+              <div class="detail-row">
+                <span class="detail-label">Original Composer(s)</span>
+                <span class="detail-value" id="detail-composers">Not documented</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Lyricist(s) / Writer(s)</span>
+                <span class="detail-value" id="detail-lyricists">Not documented</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Linked Work / Composition</span>
+                <span class="detail-value" id="detail-work">No linked work</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Original Composition Date</span>
+                <span class="detail-value" id="detail-comp-date">Not documented</span>
+              </div>
             </div>
-            <div id="intervals-container" class="intervals-tags"></div>
+
+            <!-- Performance & History -->
+            <div class="detail-card">
+              <h4 class="detail-card-title">🎙️ Performance & Dates</h4>
+              <div class="detail-row">
+                <span class="detail-label">Performing Artist</span>
+                <span class="detail-value" id="detail-perf-artist">Artist</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Earliest Performance Date</span>
+                <span class="detail-value" id="detail-perf-date">Not documented</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">First Release Date</span>
+                <span class="detail-value" id="detail-first-rel">Unknown</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Duration</span>
+                <span class="detail-value" id="detail-duration-text">0:00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documented Releases Section -->
+          <div class="detail-card releases-card">
+            <h4 class="detail-card-title">💿 Documented Releases / Albums</h4>
+            <div id="detail-releases-list" class="releases-list"></div>
+          </div>
+
+          <!-- Source Links & Data Notes -->
+          <div class="detail-card provenance-card">
+            <h4 class="detail-card-title">🔗 MusicBrainz Source Links & Provenance</h4>
+            <div class="provenance-links">
+              <a id="detail-rec-link" href="#" target="_blank" rel="noopener noreferrer" class="source-link">↗ Open Recording on MusicBrainz</a>
+              <a id="detail-work-link" href="#" target="_blank" rel="noopener noreferrer" class="source-link hidden">↗ Open Work on MusicBrainz</a>
+            </div>
+            <div id="detail-data-notes" class="data-notes-box"></div>
           </div>
         </div>
 
-        <!-- Extra details (e.g. Inversion or Transposition Details) -->
-        <div id="extra-info-box" class="extra-box hidden">
-          <span class="extra-icon">ℹ️</span>
-          <span id="extra-info-text">Details</span>
+        <!-- Music Theory Results (Chords & Scales) -->
+        <div id="theory-results-wrapper">
+          <!-- Note Badges -->
+          <div class="result-block">
+            <h3 class="block-title">Musical Notes</h3>
+            <div id="notes-container" class="notes-grid"></div>
+          </div>
+
+          <!-- Theory Breakdown Grid -->
+          <div class="theory-grid">
+            <div class="theory-card">
+              <div class="theory-header">
+                <span class="theory-label">Scale Degrees / Formula</span>
+              </div>
+              <div id="formula-container" class="formula-tags"></div>
+            </div>
+
+            <div class="theory-card">
+              <div class="theory-header">
+                <span class="theory-label">Semitone Offsets (from Root)</span>
+              </div>
+              <div id="intervals-container" class="intervals-tags"></div>
+            </div>
+          </div>
+
+          <!-- Extra details (e.g. Inversion or Transposition Details) -->
+          <div id="extra-info-box" class="extra-box hidden">
+            <span class="extra-icon">ℹ️</span>
+            <span id="extra-info-text">Details</span>
+          </div>
         </div>
       </section>
     </main>
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>Architecture: <strong>Browser UI</strong> ⇄ <strong>HTTP API</strong> ⇄ <strong>MCP ClientSession (stdio)</strong> ⇄ <strong>MCPServer (3 Tools)</strong></p>
+      <p>Architecture: <strong>Browser UI</strong> ⇄ <strong>HTTP API</strong> ⇄ <strong>MCP ClientSession (stdio)</strong> ⇄ <strong>MCPServer (4 Tools)</strong></p>
     </footer>
   </div>
 

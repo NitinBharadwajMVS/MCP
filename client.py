@@ -117,6 +117,24 @@ async def run_client() -> None:
             for c in res_chord.content:
                 if hasattr(c, "text"):
                     print(json.dumps(json.loads(c.text), indent=2))
+            print()
+
+            print("[MCP Tools] Calling tool 'search_music' with {'query': 'Bohemian Rhapsody', 'limit': 3}...")
+            res_search = await session.call_tool("search_music", arguments={"query": "Bohemian Rhapsody", "limit": 3})
+            first_recording_id = "01d2788d-862f-4d00-aa1e-f326a0d353a6"
+            for c in res_search.content:
+                if hasattr(c, "text"):
+                    search_data = json.loads(c.text)
+                    print(json.dumps(search_data, indent=2))
+                    if search_data.get("results") and len(search_data["results"]) > 0:
+                        first_recording_id = search_data["results"][0].get("id", first_recording_id)
+            print()
+
+            print(f"[MCP Tools] Calling tool 'get_song_details' with {{'recording_id': '{first_recording_id}'}}...")
+            res_details = await session.call_tool("get_song_details", arguments={"recording_id": first_recording_id})
+            for c in res_details.content:
+                if hasattr(c, "text"):
+                    print(json.dumps(json.loads(c.text), indent=2))
 
             print("=" * 70)
 
